@@ -4,13 +4,26 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class GameClient extends JComponent {
     //构造方法
     private Tank playerTank;
 
+    private List<Tank> enemyTanks;
+
+    private List<Wall> walls;
+
     private GameClient() {
-        this.playerTank = new Tank(400,100, Direction.DOWN);
+        this.playerTank = new Tank(400,100, false, Direction.DOWN);
+        this.enemyTanks = new ArrayList<>(12);
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 4; j++) {
+                this.enemyTanks.add(new Tank(200 + j * 120, 400 + 40 * i, true, Direction.UP));
+            }
+        }
         this.setPreferredSize(new Dimension(800,600));
     }
 
@@ -18,6 +31,9 @@ public class GameClient extends JComponent {
     @Override
     protected void paintComponent(Graphics g) {
         playerTank.draw(g);
+        for (Tank tank: enemyTanks) {
+            tank.draw(g);
+        }
     }
 
     public static void main(String[] args) {
@@ -34,22 +50,6 @@ public class GameClient extends JComponent {
             public void keyPressed(KeyEvent e) {
                 client.playerTank.keyPressed(e);
             }
-//                switch (e.getKeyCode()) {
-//                    case KeyEvent.VK_UP:
-//                        client.playerTank.setY(client.playerTank.getY() - 5);
-//                        break;
-//                    case KeyEvent.VK_DOWN:
-//                        client.playerTank.setY(client.playerTank.getY() + 5);
-//                        break;
-//                    case KeyEvent.VK_LEFT:
-//                        client.playerTank.setX(client.playerTank.getX() - 5);
-//                        break;
-//                    case KeyEvent.VK_RIGHT:
-//                        client.playerTank.setX(client.playerTank.getX() + 5);
-//                        break;
-//                }
-//                client.playerTank.move();
-//            }
 
             @Override
             public void keyReleased(KeyEvent e) {
