@@ -10,12 +10,26 @@ import java.util.List;
 
 
 public class GameClient extends JComponent {
+
+    private static final GameClient INSTANCE = new GameClient();
+    // 单例模式，为了能够在Tank类中访问Wall
+    static GameClient getInstance() {
+        return INSTANCE; // 返回实例静态常量
+    }
+
     //构造方法
     private Tank playerTank;
 
     private List<Tank> enemyTanks;
 
     private List<Wall> walls;
+
+    List<Tank> getEnemyTanks() {
+        return enemyTanks;
+    }
+    List<Wall> getWalls() {
+        return walls;
+    }
 
     private GameClient() {
         this.playerTank = new Tank(400,100, false, Direction.DOWN);
@@ -72,9 +86,11 @@ public class GameClient extends JComponent {
         frame.setVisible(true);
 
         //另起一个线程
+        //noinspection InfiniteLoopStatement
         while (true) {
             client.repaint();
             try {
+                //noinspection BusyWait
                 Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();

@@ -1,37 +1,20 @@
 package com.javaneversleep.tankwar;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public class Tank {
+class Tank {
 
     private int x;
     private int y;
     private boolean enemy;
     private Direction direction;
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public Tank(int x, int y, Direction direction) {
+    Tank(int x, int y, Direction direction) {
         this(x, y, false, direction);
     }
 
-    public Tank(int x, int y, boolean enemy, Direction direction) {
+    Tank(int x, int y, boolean enemy, Direction direction) {
         this.x = x;
         this.y = y;
         this.enemy = enemy;
@@ -101,14 +84,42 @@ public class Tank {
         //调用父类
         //super.paintComponent(g);
         //相对路径定位文件，正斜杠简化操作
+        int oldX = x, oldY = y;
         this.determineDirection();
         this.move();
+
+        if (x < 0 ) x = 0;
+        else if (x > 800 - getImage().getWidth(null)) x = 800 - getImage().getWidth(null);
+        if (y < 0 ) y = 0;
+        else if (y > 600 - getImage().getHeight(null)) y = 600 - getImage().getHeight(null);
+
+        Rectangle rec = this.getRectangle();
+        for (Wall wall: GameClient.getInstance().getWalls()) {
+            if (rec.intersects(wall.getRectangle())) {
+                x = oldX;
+                y = oldY;
+                break;
+            }
+        }
+
+        for (Tank tank : GameClient.getInstance().getEnemyTanks()) {
+            if (rec.intersects(tank.getRectangle())) {
+                x = oldX;
+                y = oldY;
+                break;
+            }
+        }
+
         g.drawImage(this.getImage(), this.x, this.y, null);
+    }
+
+    Rectangle getRectangle() {
+        return new Rectangle(x, y, getImage().getWidth(null), getImage().getHeight(null));
     }
 
     private boolean up, down, left, right;
 
-    public void keyPressed(KeyEvent e) {
+    void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP:
                 up = true;
@@ -152,7 +163,7 @@ public class Tank {
         }
     }
 
-    public void keyReleased(KeyEvent e) {
+    void keyReleased(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP:
                 up = false;
