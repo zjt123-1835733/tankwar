@@ -24,9 +24,16 @@ public class GameClient extends JComponent {
 
     private List<Wall> walls;
 
+    private List<Missile> missiles;
+
     List<Tank> getEnemyTanks() {
         return enemyTanks;
     }
+
+    List<Missile> getMissiles() {
+        return missiles;
+    }
+
     List<Wall> getWalls() {
         return walls;
     }
@@ -34,6 +41,7 @@ public class GameClient extends JComponent {
     private GameClient() {
         this.playerTank = new Tank(400,100, false, Direction.DOWN);
         this.enemyTanks = new ArrayList<>(12);
+        this.missiles = new ArrayList<>();
         this.walls = Arrays.asList(
             new Wall(200, 140, true, 15),
             new Wall(200, 540, true, 15),
@@ -60,13 +68,17 @@ public class GameClient extends JComponent {
         for (Wall wall: walls) {
             wall.draw(g);
         }
+        for (Missile missile: missiles) {
+            missile.draw(g);
+        }
     }
 
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         frame.setTitle("Tank War");
         frame.setIconImage(new ImageIcon("assets/images/icon.png").getImage());
-        GameClient client = new GameClient();
+        // 发射炮弹时，一个对象出现了两个实例，导致没有炮弹显示
+        final GameClient client = GameClient.getInstance(); //单例，不要new GameClient
         client.repaint(); //不知道干嘛
         frame.add(client);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
