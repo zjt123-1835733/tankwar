@@ -1,7 +1,12 @@
 package com.javaneversleep.tankwar;
 
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.util.Random;
 
 class Tank {
 
@@ -28,22 +33,22 @@ class Tank {
             case UP:
                 y -= 5;
                 break;
-            case UPLEFT:
+            case LEFT_UP:
                 y -= 5;
                 x -= 5;
                 break;
-            case UPRIGHT:
+            case RIGHT_UP:
                 y -= 5;
                 x += 5;
                 break;
             case DOWN:
                 y += 5;
                 break;
-            case DOWNLEFT:
+            case LEFT_DOWN:
                 y += 5;
                 x -= 5;
                 break;
-            case DOWNRIGHT:
+            case RIGHT_DOWN:
                 y += 5;
                 x += 5;
                 break;
@@ -59,25 +64,7 @@ class Tank {
     Image getImage() {
         // ctrl + shift + R 进行替换
         String prefix = enemy ? "e" : "";
-        switch (direction) {
-            case UP:
-                return Tools.getImage(prefix + "tankU.gif");
-            case UPLEFT:
-                return Tools.getImage(prefix + "tankLU.gif");
-            case UPRIGHT:
-                return Tools.getImage(prefix + "tankRU.gif");
-            case DOWN:
-                return Tools.getImage(prefix + "tankD.gif");
-            case DOWNLEFT:
-                return Tools.getImage(prefix + "tankLD.gif");
-            case DOWNRIGHT:
-                return Tools.getImage(prefix + "tankRD.gif");
-            case LEFT:
-                return Tools.getImage(prefix + "tankL.gif");
-            case RIGHT:
-                return Tools.getImage(prefix + "tankR.gif");
-        }
-        return null;
+        return direction.getImage(prefix + "tank");
     }
 
     void draw(Graphics g) {
@@ -136,6 +123,8 @@ class Tank {
             case KeyEvent.VK_CONTROL:
                 fire();
                 break;
+            case KeyEvent.VK_A: superFire();
+                break;
         }
         this.determineDirection();
     }
@@ -144,6 +133,26 @@ class Tank {
         Missile missile = new Missile(x + getImage().getWidth(null) / 2 - 6,
                 y + getImage().getHeight(null) / 2 - 6, enemy, direction);
         GameClient.getInstance().getMissiles().add(missile);
+
+        // 开火音效用java swing 或java fx
+        playAudio("shoot.wav");
+    }
+
+    private void superFire() {
+        for (Direction direction : Direction.values()) {
+            Missile missile = new Missile(x + getImage().getWidth(null) / 2 - 6,
+                    y + getImage().getHeight(null) / 2 - 6, enemy, direction);
+            GameClient.getInstance().getMissiles().add(missile);
+        }
+        // 开火音效用java swing 或java fx
+        String audioFile = new Random().nextBoolean() ? "supershoot.aiff" : "supershoot.wav";
+        playAudio(audioFile);
+    }
+
+    private void playAudio(String fileName) {
+        Media sound = new Media(new File("assets/audios/" + fileName).toURI().toString());
+        MediaPlayer mediaPlayer = new MediaPlayer(sound);
+        mediaPlayer.play();
     }
 
     private boolean stopped;
@@ -153,13 +162,13 @@ class Tank {
             this.stopped = true;
         } else {
             if (up && left && !down && !right)
-                this.direction = Direction.UPLEFT;
+                this.direction = Direction.LEFT_UP;
             else if (up && !left && !down && right)
-                this.direction = Direction.UPRIGHT;
+                this.direction = Direction.RIGHT_UP;
             else if (!up && left && down && !right)
-                this.direction = Direction.DOWNLEFT;
+                this.direction = Direction.LEFT_DOWN;
             else if (!up && !left && down && right)
-                this.direction = Direction.DOWNRIGHT;
+                this.direction = Direction.RIGHT_DOWN;
             else if (up && !left && !down && !right)
                 this.direction = Direction.UP;
             else if (!up && !left && down && !right)
