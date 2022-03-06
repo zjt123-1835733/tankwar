@@ -15,6 +15,28 @@ class Tank {
     private int y;
     private boolean enemy;
     private Direction direction;
+    private boolean alive = true;
+    private int hp = 100;
+
+    int getHp() {
+        return hp;
+    }
+
+    void setHp(int hp) {
+        this.hp = hp;
+    }
+
+    boolean isAlive() {
+        return alive;
+    }
+
+    void setAlive(boolean alive) {
+        this.alive = alive;
+    }
+
+    boolean isEnemy() {
+        return enemy;
+    }
 
     Tank(int x, int y, Direction direction) {
         this(x, y, false, direction);
